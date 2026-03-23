@@ -6,49 +6,47 @@ import pandas as pd
 
 def album(data):
     album_list = []
-    for row in data['items']:
-        album_id = row['track']['album']['id']
-        album_name = row['track']['album']['name']
-        album_release_date = row['track']['album']['release_date']
-        album_total_tracks = row['track']['album']['total_tracks']
-        album_url = row['track']['album']['external_urls']['spotify']
-        album_element = {'album_id':album_id,'name':album_name,'release_date':album_release_date,
-                            'total_tracks':album_total_tracks,'url':album_url}
-        album_list.append(album_element)
-    return album_list
+for row in data['items']:
+    album_id = row['item']['album']['id']
+    album_name = row['item']['album']['name']
+    album_release_date = row['item']['album']['release_date']
+    album_total_tracks = row['item']['album']['total_tracks']
+    album_url = row['item']['album']['external_urls']['spotify']
+    album_element = {'album_id':album_id,'name':album_name,'release_date':album_release_date,
+                        'total_tracks':album_total_tracks,'url':album_url}
+    album_list.append(album_element)
+
     
 def artist(data):
     artist_list = []
-    for row in data['items']:
-        for key, value in row.items():
-            if key == "track":
-                for artist in value['artists']:
-                    artist_dict = {'artist_id':artist['id'], 'artist_name':artist['name'], 'external_url': artist['href']}
-                    artist_list.append(artist_dict)
-    return artist_list
+for row in data['items']:
+    for key, value in row.items():
+        if key == "item":
+            for artist in value['artists']:
+                artist_dict = {'artist_id':artist['id'], 'artist_name':artist['name'], 'external_url': artist['href']}
+                artist_list.append(artist_dict)
+
     
 def songs(data):
     song_list = []
-    for row in data['items']:
-        song_id = row['track']['id']
-        song_name = row['track']['name']
-        song_duration = row['track']['duration_ms']
-        song_url = row['track']['external_urls']['spotify']
-        song_popularity = row['track']['popularity']
-        song_added = row['added_at']
-        album_id = row['track']['album']['id']
-        artist_id = row['track']['album']['artists'][0]['id']
-        song_element = {'song_id':song_id,'song_name':song_name,'duration_ms':song_duration,'url':song_url,
-                        'popularity':song_popularity,'song_added':song_added,'album_id':album_id,
-                        'artist_id':artist_id
-                       }
-        song_list.append(song_element)
-        
-    return song_list
+for row in data['items']:
+    song_id = row['item']['id']
+    song_name = row['item']['name']
+    song_duration = row['item']['duration_ms']
+    song_url = row['item']['external_urls']['spotify']
+    song_added = row['added_at']
+    album_id = row['item']['album']['id']
+    artist_id = row['item']['album']['artists'][0]['id']
+    song_element = {'song_id':song_id,'song_name':song_name,'duration_ms':song_duration,'url':song_url,
+                    'song_added':song_added,'album_id':album_id,
+                    'artist_id':artist_id
+                   }
+    song_list.append(song_element)
+
     
 def lambda_handler(event, context):
     s3 = boto3.client('s3')
-    Bucket = "spotify-etl-project-darshil"
+    Bucket = "spotify-etl-project-bhargav"
     Key = "raw_data/to_processed/"
     
     spotify_data = []
